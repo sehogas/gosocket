@@ -1,8 +1,14 @@
-# SOCKET SERVER GOLANG
+# SOCKET CHAT SERVER GOLANG
 
-## Generar binario e instalar
+## Para ejecutar el servidor
 
-```make install```
+```make run```
+
+## para ejecutar el cliente
+
+* Ejecutar Live Server sobre el index.html 
+* Abrir varias ventanas para simular varios usuarios de chat
+
 
 ## Autor
 * [Sebastian Hogas](https://github.com/sehogas)

@@ -7,25 +7,80 @@
     <title>Go WebSocket Tutorial</title>
   </head>
   <body>
-    <h2>Hello World</h2>
+    <h1>Cliente de Chat en GO</h1>
+
+    <div>
+      <input type="text" id="username">
+      <button id="connect">Conectar</button>
+    </div>
+
+    <form id="chat-form">
+      <input type="text" name="target" placeholder="ingrese el usuario destino">
+      <input type="text" name="message" placeholder="ingrese el mensaje">
+      <button>Enviar</button>
+    </form>
+
+    <br>
+
+    <div>
+      <h2>Mensajes: </h2>
+      <ul id="lista"></ul>
+    </div>
 
     <script>
-        let socket = new WebSocket("ws://127.0.0.1:8000/ws");
-        console.log("Attempting Connection...");
+        let username="";
+        let conButton = document.getElementById('connect');
+        let inputUsername = document.getElementById('username');
+        let formulario = document.getElementById('chat-form');
+        //let lista = document.getElementById('lista');
+        let socket;
 
-        socket.onopen = () => {
-            console.log("Successfully Connected");
-            socket.send("Hi From the Client!")
-        };
-        
-        socket.onclose = event => {
-            console.log("Socket Closed Connection: ", event);
-            socket.send("Client Closed!")
-        };
+        conButton?.addEventListener('click', () => {
+          username = inputUsername?.value;
+          socket = new WebSocket(`ws://127.0.0.1:8000/chat?username=${username}`);
 
-        socket.onerror = error => {
-            console.log("Socket Error: ", error);
-        };
+          socket.addEventListener('message', event => {
+            //console.log('<--', JSON.parse(event.data));
+            const data = JSON.parse(event.data);
+            AgregarMensaje('<-- ' + data.sender + ': ' + data.body); 
+          });
+
+          socket.onopen = event => {
+            console.log('Conectado');
+          };
+
+          socket.onclose = event => {
+            console.log("Desconectado: ", event);
+            //socket.send("Desconectado!")
+          };
+
+          socket.onerror = error => {
+            console.log("Error de conexión: ", error);
+          };
+
+        });
+
+        formulario?.addEventListener('submit', event => {
+          event.preventDefault(); // para que no recargue la página
+          const data = {
+            sender: username,
+            target: formulario.target.value,
+            body: formulario.message.value,
+          };
+          socket.send(JSON.stringify(data));
+          //console.log("-->",data);
+          AgregarMensaje('--> ' + data.target + ': ' + data.body); 
+        });
+
+        function AgregarMensaje( $msg ) {
+            var li = document.createElement("li");
+            //var p = document.createElement("p");
+            //p.appendChild(document.createTextNode($msg));
+            li.appendChild(document.createTextNode($msg));
+            document.querySelector("#lista").appendChild(li);
+            //lista.appendChild(li).appendChild(p);
+            //document.querySelector("#lista").appendChild(li).appendChild(p);
+          }
 
     </script>
   </body>

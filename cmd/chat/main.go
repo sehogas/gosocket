@@ -1,5 +1,12 @@
 package main
 
+import "github.com/sehogas/gosocket/internal"
+
+func main() {
+	internal.StartWebSocket("8000")
+}
+
+/*
 import (
 	"fmt"
 	"log"
@@ -7,7 +14,9 @@ import (
 
 	"github.com/gorilla/websocket"
 )
+*/
 
+/*
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
@@ -73,3 +82,4 @@ func main() {
 	setupRoutes()
 	log.Fatal(http.ListenAndServe(":8000", nil))
 }
+*/
