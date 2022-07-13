@@ -49,7 +49,7 @@ func (w *WebSocketChat) HandlerConnections(rw http.ResponseWriter, r *http.Reque
 	if err != nil {
 		log.Println(err)
 		rw.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprintf(rw, "Error de conexión.", err)
+		fmt.Fprintf(rw, "Error de conexión: %s", err.Error())
 		return
 	}
 	keys := r.URL.Query()
@@ -79,24 +79,24 @@ func (w *WebSocketChat) UsersManager() {
 func (w *WebSocketChat) AddUser(userchat *UserChat) {
 	if user, ok := w.users[userchat.UserName]; ok {
 		user.Connection = userchat.Connection
-		log.Printf("Reconnection user: %s \n", userchat.UserName)
+		log.Printf("Usuario reconectado: %s \n", userchat.UserName)
 	} else {
 		w.users[userchat.UserName] = userchat
-		log.Printf("Connection user: %s \n", userchat.UserName)
+		log.Printf("Usuario conectado: %s \n", userchat.UserName)
 	}
 }
 func (w *WebSocketChat) DisconnectUser(username string) {
 	if user, ok := w.users[username]; ok {
 		defer user.Connection.Close()
 		delete(w.users, username)
-		log.Printf("User: %s, left the chat.", username)
+		log.Printf("Usuario: %s, ha dejado el chat.", username)
 	}
 }
 
 func (w *WebSocketChat) SendMessage(message *models.Message) {
 	if user, ok := w.users[message.Target]; ok {
 		if err := user.SendMessage(message); err != nil {
-			log.Printf("No se pudo mandar el mensaje to %s", message.Target)
+			log.Printf("No se pudo enviar el mensaje a [%s]", message.Target)
 		}
 
 	}
@@ -108,5 +108,4 @@ func StartWebSocket(port string) {
 	http.HandleFunc("/chat", ws.HandlerConnections)
 	go ws.UsersManager()
 	log.Fatalln(http.ListenAndServe(fmt.Sprintf("localhost:%s", port), nil))
-
 }
